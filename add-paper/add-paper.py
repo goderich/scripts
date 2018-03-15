@@ -7,23 +7,24 @@ PAPIS_DIR = '/home/iwaka/Documents/papers/'
 
 def main(filename):
     author_name = input('Enter author name'
-                        '(e.g. "van der Smith, John A."):\n')
-    year = input('Enter year of publication:\n')
-    title = input('Enter title of book or article:\n')
+                        '(e.g. "van der Smith, John A."):\n> ')
+    year = input('Enter year of publication:\n> ')
+    title = input('Enter title of book or article:\n> ')
     name_year_title = (author_name, year, title)
 
-    new_name = create_file_name(name_year_title)
-    rename_pdf(filename, new_name)
+    new_dir_name = create_dir_name(name_year_title)
+    new_file_name = new_dir_name + '.pdf'
+    rename_pdf(filename, new_file_name)
 
-    papis_add(new_name, name_year_title)
+    papis_add(new_file_name, name_year_title)
 
-    add_year(new_name, year)
-    print('Added ' + new_name + '.pdf to papis library.')
+    add_year_to_yaml(new_dir_name, year)
+    print('Added ' + new_file_name + ' to papis library.')
 
-    remove_original_file(new_name)
+    remove_original_file(new_file_name)
 
 
-def create_file_name(name_year_title):
+def create_dir_name(name_year_title):
     '''
     last_name and formatted_year are either empty strings,
     or end with an underscore for name formatting
@@ -62,25 +63,25 @@ def get_formatted_title(title):
 
 
 def rename_pdf(filename, new_name):
-    os.rename(filename, new_name + '.pdf')
+    os.rename(filename, new_name)
 
 
 def papis_add(filename, name_year_title):
     author_name, year, title = name_year_title
-    subprocess.run(['papis', 'add', filename + '.pdf',
+    subprocess.run(['papis', 'add', filename,
                     '--author', author_name,
                     '--title', title,
                     '--name', filename])
 
 
-def add_year(filename, year):
-    info_file = open(PAPIS_DIR + filename + '/info.yaml', 'a')
+def add_year_to_yaml(dir_name, year):
+    info_file = open(PAPIS_DIR + dir_name + '/info.yaml', 'a')
     info_file.write("year: '" + year + "'")
     info_file.close()
 
 
 def remove_original_file(filename):
-    os.remove(filename + '.pdf')
+    os.remove(filename)
 
 
 if __name__ == '__main__':
