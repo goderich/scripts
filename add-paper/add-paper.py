@@ -6,11 +6,18 @@ PAPIS_DIR = '/home/iwaka/Documents/papers/'
 
 
 def main(filename):
-    author_name = input('Enter author name'
+    author_name = input('Enter author name '
                         '(e.g. "van der Smith, John A."):\n> ')
     year = input('Enter year of publication:\n> ')
-    title = input('Enter title of book or article:\n> ')
+    title = input('Enter title of document:\n> ')
     name_year_title = (author_name, year, title)
+
+    type_abbrev = input('Is it an (a)rticle, (b)ook, book (c)hapter, '
+                        '(p)roceedings paper, ab(s)tract, (m)aster thesis, '
+                        'PhD (d)issertation, p(r)esentation, or (o)ther? '
+                        '(default article)\n> ')
+
+    bibtex_type = get_bibtex_type(type_abbrev)
 
     new_dir_name = create_dir_name(name_year_title)
     new_file_name = new_dir_name + '.pdf'
@@ -60,6 +67,27 @@ def get_formatted_title(title):
         return strip_punctuation_and_spaces(primary_title)
     else:
         return strip_punctuation_and_spaces(title)
+
+
+def get_bibtex_type(letter):
+    if letter.lower() == 'a' or letter == '':
+        return 'article'
+    elif letter.lower() == 'b':
+        return 'book'
+    elif letter.lower() == 'c':
+        return 'incollection'
+    elif letter.lower() == 'p':
+        return 'inproceedings'
+    elif letter.lower() == 's':
+        return 'abstract'
+    elif letter.lower() == 'r':
+        return 'presentation'
+    elif letter.lower() == 'm':
+        return 'mastersthesis'
+    elif letter.lower() == 'd':
+        return 'phdthesis'
+    else:
+        return ''
 
 
 def strip_punctuation_and_spaces(string):
