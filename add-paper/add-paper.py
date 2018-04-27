@@ -57,9 +57,15 @@ def get_formatted_year(year):
 def get_formatted_title(title):
     if len(title) > 50:
         primary_title = title.split(':')[0]
-        return primary_title[:50].replace(' ', '_')
+        return strip_punctuation_and_spaces(primary_title)
     else:
-        return title.replace(' ', '_')
+        return strip_punctuation_and_spaces(title)
+
+
+def strip_punctuation_and_spaces(string):
+    return ''.join(x for x in string
+                   if x.isalnum() or x.isspace
+                   ).replace(' ', '_')
 
 
 def rename_pdf(filename, new_name):
@@ -68,10 +74,11 @@ def rename_pdf(filename, new_name):
 
 def papis_add(filename, name_year_title):
     author_name, year, title = name_year_title
+    dir_name = filename[:-4]
     subprocess.run(['papis', 'add', filename,
                     '--author', author_name,
                     '--title', title,
-                    '--name', filename])
+                    '--name', dir_name])
 
 
 def add_year_to_yaml(dir_name, year):
