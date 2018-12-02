@@ -15,3 +15,7 @@ A script to automatically rename the folders in my papis directory based on YAML
 ## add-paper
 
 A script to automate some of my workflow when adding papers to the papis library. It prompts the user for the author's name, year of publication, and document title. It then renames the original file, adds it to the papis library, appends the year to the `info.yaml` file (papis can't do that yet), and then deletes the original file.
+
+## hbar
+
+A small Haskell script that checks the battery level and sends it to stdout. Meant to be used with a status bar.
