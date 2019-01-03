@@ -19,3 +19,7 @@ A script to automate some of my workflow when adding papers to the papis library
 ## hbar
 
 A small Haskell script that checks the battery level and sends it to stdout. Meant to be used with a status bar.
+
+## csv-praat
+
+A Haskell script to convert CSV files in the format (begin-time, end-time, text) to Praat TextGrid files. I used this with [Parlatype](http://gkarsay.github.io/parlatype/), so the parser is aimed at Parlatype-style timestamps.
