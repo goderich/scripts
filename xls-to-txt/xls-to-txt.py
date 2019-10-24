@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import openpyxl as x
+from os.path import basename
 
 print('''
 HOW TO USE:
@@ -14,7 +15,7 @@ def get_sheetname(input_file, sheet_num=0):
     return wb[wb.sheetnames[sheet_num]]
 
 
-def transform_values(sh, FROM=1, TO=800, ata='d', chi='c'):
+def transform_values(sh, FROM=1, TO=783, ata='d', chi='c'):
     '''Take pointer to sheet and a range of cells
        and return a list of strings in the format
 
@@ -33,7 +34,10 @@ def transform_values(sh, FROM=1, TO=800, ata='d', chi='c'):
         if a is None or c is None:
             l.append('')
         else:
-            a = a.replace('?','Q').replace("'",'ʔ')
+            a = a.replace('?','Q') \
+                 .replace('!','E') \
+                 .replace("'",'ʔ') \
+                 .replace(';',',')
             l.append(a+'_'+c)
 
     return l
@@ -47,3 +51,11 @@ def write_to_file(output_file, l):
         f.write('\n')
 
     f.close()
+
+def im_lazy(input_file):
+    output_file = basename(input_file).replace('xlsx','txt')
+    sheet = get_sheetname(input_file)
+    data = transform_values(sheet)
+    write_to_file(output_file, data)
+    print('All operations finished!')
+
