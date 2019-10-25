@@ -9,7 +9,7 @@ import qualified Data.Vector as V
 data Lemma = Lemma
     { semanticDomain :: !String
     , meaning :: !String
-    , rest :: [String]
+    , rest :: V.Vector String
     } deriving Show
 
 instance FromRecord Lemma where
