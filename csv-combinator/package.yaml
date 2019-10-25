@@ -24,6 +24,7 @@ dependencies:
 - cassava
 - vector
 - bytestring
+- containers
 
 executables:
   csv-combinator-exe:

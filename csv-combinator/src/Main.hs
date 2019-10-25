@@ -5,6 +5,7 @@ module Main where
 import qualified Data.ByteString.Lazy as BL
 import Data.Csv
 import qualified Data.Vector as V
+import qualified Data.Map.Strict as M
 
 data Lemma = Lemma
     { semanticDomain :: !String
