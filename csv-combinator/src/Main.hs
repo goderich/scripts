@@ -25,22 +25,21 @@ instance FromRecord Lemma where
                     r .! 1 <*>
                     parseRecord (V.tail . V.tail $ r)
 
-type Key = (String, String)
-
 fromLemmata :: V.Vector Lemma -> M.Map Key [Glosses]
-fromLemmata = M.fromList . V.toList . V.map toKey 
+fromLemmata = M.fromListWith (flip (++)) . V.toList . V.map toKey 
     where toKey (Lemma d m r) = ((d,m), [r])
 
 toLemmata :: M.Map Key [Glosses] -> V.Vector Lemma
 toLemmata = V.fromList . concatMap unwrapLemmata . M.toList
-    where unwrapLemmata ((d,m), [r]) = map (Lemma d m) [r]
 
--- Like zipWith, but does not stop when one of the lists is empty
--- TODO: Need to keep the lists the same length, or at least pad in front
-combineVs :: [V.Vector a] -> [V.Vector a] -> [V.Vector a]
-combineVs xs [] = xs
-combineVs [] ys = ys
-combineVs (x:xs) (y:ys) = (V.++) x y : combineVs xs ys
+unwrapLemmata :: (Key, [Glosses]) -> [Lemma]
+unwrapLemmata ((d,m), []) = [Lemma d m []]
+unwrapLemmata ((d,m), rs) = map (Lemma d m) rs
+
+combineLs :: [[a]] -> [[a]] -> [[a]]
+combineLs xs [] = xs
+combineLs [] ys = ys
+combineLs (x:xs) (y:ys) = (++) x y : combineLs xs ys
 
 transformCSV :: Either String (V.Vector Lemma)
              -> Either String (V.Vector Lemma)
@@ -50,7 +49,7 @@ transformCSV xs ys = do
     v2 <- ys
     let m1 = fromLemmata v1
     let m2 = fromLemmata v2
-    let m3 = M.unionWith combineVs m1 m2
+    let m3 = M.unionWith combineLs m1 m2
     pure $ toLemmata m3
 
 main :: IO ()
