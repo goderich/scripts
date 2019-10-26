@@ -7,7 +7,8 @@ import Data.Csv
 import qualified Data.Vector as V
 import qualified Data.Map.Strict as M
 
-type Glosses = V.Vector String
+type Key = (String, String)
+type Glosses = [String]
 
 data Lemma = Lemma
     { semanticDomain :: !String
@@ -61,4 +62,4 @@ main = do
     let result = transformCSV csv1 csv2
     case result of
         Left err -> putStrLn err
-        Right r  -> V.mapM_ print r
+        Right r  -> mapM_ print r
