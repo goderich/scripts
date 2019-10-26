@@ -11,8 +11,8 @@ type Key = (String, String)
 type Glosses = [String]
 
 data Lemma = Lemma
-    { semanticDomain :: !String
-    , meaning :: !String
+    { semanticDomain :: String
+    , meaning :: String
     , rest :: Glosses
     }
 
