@@ -25,6 +25,10 @@ instance FromRecord Lemma where
                     r .! 1 <*>
                     parseRecord (V.tail . V.tail $ r)
 
+instance ToRecord Lemma where
+    toRecord (Lemma d m gs) =
+        record (toField d : toField m : map toField gs)
+
 fromLemmata :: V.Vector Lemma -> M.Map Key [Glosses]
 fromLemmata = M.fromListWith (flip (++)) . V.toList . V.map toKey 
     where toKey (Lemma d m r) = ((d,m), [r])
@@ -71,4 +75,5 @@ main = do
     let result = transformCSV csv1 csv2
     case result of
         Left err -> putStrLn err
-        Right r  -> mapM_ print r
+        Right r  -> BL.writeFile "test/output.csv"
+                  . encode . V.toList $ r
