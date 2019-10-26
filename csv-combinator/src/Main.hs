@@ -33,13 +33,24 @@ toLemmata :: M.Map Key [Glosses] -> V.Vector Lemma
 toLemmata = V.fromList . concatMap unwrapLemmata . M.toList
 
 unwrapLemmata :: (Key, [Glosses]) -> [Lemma]
-unwrapLemmata ((d,m), []) = [Lemma d m []]
 unwrapLemmata ((d,m), rs) = map (Lemma d m) rs
 
-combineLs :: [[a]] -> [[a]] -> [[a]]
-combineLs xs [] = xs
-combineLs [] ys = ys
-combineLs (x:xs) (y:ys) = (++) x y : combineLs xs ys
+combineLs :: [[String]] -> [[String]] -> [[String]]
+combineLs xs ys = combineLsPadded xs ys l
+    where l = length (head xs) + length (head ys)
+
+-- Combines two lists of lists of Strings into a single list
+-- such that the length of all embedded lists is the same.
+-- If the length of outer lists is different, the inner lists
+-- are padded with empty Strings.
+combineLsPadded :: [[String]] -> [[String]] -> Int -> [[String]]
+combineLsPadded [] [] _ = []
+combineLsPadded (x:xs) [] l =
+    (x ++ replicate (l - length x) "") : combineLsPadded xs [] l
+combineLsPadded [] (y:ys) l =
+    (replicate (l - length y) "" ++ y) : combineLsPadded [] ys l
+combineLsPadded (x:xs) (y:ys) l =
+    (++) x y : combineLsPadded xs ys l
 
 transformCSV :: Either String (V.Vector Lemma)
              -> Either String (V.Vector Lemma)
