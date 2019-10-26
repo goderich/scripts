@@ -44,13 +44,12 @@ combineLs xs ys = combineLsPadded xs ys l
 -- If the length of outer lists is different, the inner lists
 -- are padded with empty Strings.
 combineLsPadded :: [[String]] -> [[String]] -> Int -> [[String]]
-combineLsPadded [] [] _ = []
-combineLsPadded (x:xs) [] l =
-    (x ++ replicate (l - length x) "") : combineLsPadded xs [] l
-combineLsPadded [] (y:ys) l =
-    (replicate (l - length y) "" ++ y) : combineLsPadded [] ys l
-combineLsPadded (x:xs) (y:ys) l =
-    (++) x y : combineLsPadded xs ys l
+combineLsPadded xxs@(x:xs) yys@(y:ys) l
+  | null xxs && null yys = []
+  | null yys = (x ++ pad x l) : combineLsPadded xs [] l
+  | null xxs = (pad y l ++ y) : combineLsPadded [] ys l
+  | otherwise = (++) x y : combineLsPadded xs ys l
+  where pad z n = replicate (n - length z) ""
 
 transformCSV :: Either String (V.Vector Lemma)
              -> Either String (V.Vector Lemma)
