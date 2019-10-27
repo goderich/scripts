@@ -6,6 +6,7 @@ import qualified Data.ByteString.Lazy as BL
 import Data.Csv
 import qualified Data.Vector as V
 import qualified Data.Map.Strict as M
+import System.Environment (getArgs)
 
 type Key = (String, String)
 type Glosses = [String]
@@ -72,11 +73,10 @@ transformCSV xs ys = do
 
 main :: IO ()
 main = do
-    data1 <- BL.readFile "test/data.csv"
-    data2 <- BL.readFile "test/data2.csv"
-    let csv1 = decode HasHeader data1
-    let csv2 = decode HasHeader data2
-    let result = transformCSV csv1 csv2
+    args <- getArgs
+    files <- mapM BL.readFile args
+    let csvs = map (decode HasHeader) files
+    let result = foldl1 transformCSV csvs
     case result of
         Left err -> putStrLn err
         Right r  -> BL.writeFile "test/output.csv"
