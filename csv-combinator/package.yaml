@@ -26,17 +26,17 @@ dependencies:
 - bytestring
 - containers
 
+library:
+  source-dirs: src
+
 executables:
   csv-combinator-exe:
     main:                Main.hs
-    source-dirs:         src
+    source-dirs:         app
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -Wall
-    - -Wcompat
-    - -Wredundant-constraints
     dependencies:
     - csv-combinator
 
@@ -48,8 +48,5 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -Wall
-    - -Wcompat
-    - -Wredundant-constraints
     dependencies:
     - csv-combinator
