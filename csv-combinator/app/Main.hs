@@ -42,25 +42,16 @@ toLemmata = V.fromList . concatMap unwrapLemmata . M.toList
 unwrapLemmata :: (Key, [Glosses]) -> [Lemma]
 unwrapLemmata ((d,m), rs) = map (Lemma d m) rs
 
-combineLs :: [[String]] -> [[String]] -> [[String]]
-combineLs xs ys = combineLsPadded xs ys l
-    where l = length (head xs) + length (head ys)
+combineMatrices :: Monoid a => [[a]] -> [[a]] -> [[a]]
+combineMatrices xs ys
+  | null xs = ys
+  | length xs > length ys = zipWith (++) xs (pad (length xs - length ys) ys)
+  | length xs < length ys = zipWith (++) (pad (length ys - length xs) xs) ys
+  | otherwise = zipWith (++) xs ys
 
--- Combines two lists of lists of Strings into a single list
--- such that the length of all embedded lists is the same.
--- If the length of outer lists is different, the inner lists
--- are padded with empty Strings.
-combineLsPadded :: [[String]] -> [[String]] -> Int -> [[String]]
-combineLsPadded [] [] _ = []
-combineLsPadded (x:xs) [] l =
-    (x ++ pad x l) : combineLsPadded xs [] l
-combineLsPadded [] (y:ys) l =
-    (pad y l ++ y) : combineLsPadded [] ys l
-combineLsPadded (x:xs) (y:ys) l =
-    (x ++ y) : combineLsPadded xs ys l
-
-pad :: [a] -> Int -> [String]
-pad x n = replicate (n - length x) ""
+pad :: Monoid a => Int -> [[a]] -> [[a]]
+pad len xs = xs ++ (replicate len
+                          (replicate (length . head $ xs) mempty))
 
 transformCSV :: Either String (V.Vector Lemma)
              -> Either String (V.Vector Lemma)
@@ -77,14 +68,15 @@ transformCSV xs ys = do
                M.preserveMissing
                -- Drop keys only found in m2
                M.dropMissing
-               (M.zipWithMatched (\_ x y -> combineLs x y))
+               (M.zipWithMatched (\_ x y -> combineMatrices x y))
                m1 m2
     pure . fmap (padLemma l) . toLemmata $ m3
 
 -- Makes sure every row has the same number of columns.
--- Only need to pad right because left is padded in combineLs
+-- This is only needed when m2 has missing keys.
 padLemma :: Int -> Lemma -> Lemma
 padLemma l (Lemma d m gs) = Lemma d m (gs ++ pad gs l)
+  where pad x n = replicate (n - length x) ""
 
 diffCSVs :: Either String (V.Vector Lemma)
          -> Either String (V.Vector Lemma)
