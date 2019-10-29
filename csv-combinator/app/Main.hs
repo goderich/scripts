@@ -45,12 +45,13 @@ unwrapLemmata ((d,m), rs) = map (Lemma d m) rs
 combineMatrices :: Monoid a => [[a]] -> [[a]] -> [[a]]
 combineMatrices xs ys
   | null xs = ys
-  | length xs > length ys = zipWith (++) xs (pad (length xs - length ys) ys)
-  | length xs < length ys = zipWith (++) (pad (length ys - length xs) xs) ys
+  | l xs > l ys = zipWith (++) xs (padRows (l xs - l ys) ys)
+  | l xs < l ys = zipWith (++) (padRows (l ys - l xs) xs) ys
   | otherwise = zipWith (++) xs ys
+    where l = length
 
-pad :: Monoid a => Int -> [[a]] -> [[a]]
-pad len xs = xs ++ (replicate len
+padRows :: Monoid a => Int -> [[a]] -> [[a]]
+padRows len xs = xs ++ (replicate len
                           (replicate (length . head $ xs) mempty))
 
 transformCSV :: Either String (V.Vector Lemma)
@@ -59,24 +60,22 @@ transformCSV :: Either String (V.Vector Lemma)
 transformCSV xs ys = do
     v1 <- xs
     v2 <- ys
-    -- l = total amount of gloss columns in two tables
-    let l = sum . map (length . rest . V.head) $ [v1, v2]
+    -- len2 = amount of gloss columns in v2, for padding
+    let len2 = length . rest . V.head $ v2
     let m1 = fromLemmata v1
     let m2 = fromLemmata v2
     let m3 = M.merge
-               -- Preserve keys only found in m1
-               M.preserveMissing
+               -- Pad keys only found in m1
+               (M.mapMissing (\_ x -> padColumns len2 x))
                -- Drop keys only found in m2
                M.dropMissing
                (M.zipWithMatched (\_ x y -> combineMatrices x y))
                m1 m2
-    pure . fmap (padLemma l) . toLemmata $ m3
+    pure . toLemmata $ m3
 
--- Makes sure every row has the same number of columns.
--- This is only needed when m2 has missing keys.
-padLemma :: Int -> Lemma -> Lemma
-padLemma l (Lemma d m gs) = Lemma d m (gs ++ pad gs l)
-  where pad x n = replicate (n - length x) ""
+padColumns :: Monoid a => Int -> [[a]] -> [[a]]
+padColumns l xs = map (pad l) xs
+  where pad n ys = ys ++ replicate n mempty
 
 diffCSVs :: Either String (V.Vector Lemma)
          -> Either String (V.Vector Lemma)
