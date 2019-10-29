@@ -9,6 +9,7 @@ import qualified Data.Map.Strict as M
 import qualified Data.Map.Merge.Strict as M
 import System.Environment (getArgs)
 import Control.Monad (zipWithM_)
+import Data.List (elemIndex)
 
 type Key = (String, String)
 type Glosses = [String]
@@ -93,6 +94,12 @@ printCSV x name = case x of
     Left err -> putStrLn err
     Right r  -> BL.writeFile name . encode . V.toList $ r
 
+diffName :: String -> String
+diffName n = basename ++ "-diff.csv"
+  where basename = case elemIndex '.' n of
+                     Just x -> take x n
+                     Nothing -> n
+
 main :: IO ()
 main = do
     args <- getArgs
@@ -101,6 +108,6 @@ main = do
     let original = decode HasHeader origF
     let csvs = map (decode HasHeader) files
     let diffs = map (diffCSVs original) csvs
-    zipWithM_ printCSV diffs (map (++ "-diff") args)
+    zipWithM_ printCSV diffs (map diffName args)
     let merged = foldl transformCSV original csvs
     printCSV merged "test/output.csv"
