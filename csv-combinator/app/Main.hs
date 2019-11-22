@@ -55,9 +55,9 @@ padRows :: Monoid a => Int -> [[a]] -> [[a]]
 padRows len xs = xs ++ (replicate len
                           (replicate (length . head $ xs) mempty))
 
-transformCSV :: Either String (V.Vector Lemma)
-             -> Either String (V.Vector Lemma)
-             -> Either String (V.Vector Lemma)
+transformCSV :: Monad m => m (V.Vector Lemma)
+                        -> m (V.Vector Lemma)
+                        -> m (V.Vector Lemma)
 transformCSV xs ys = do
     v1 <- xs
     v2 <- ys
@@ -78,9 +78,9 @@ padColumns :: Monoid a => Int -> [[a]] -> [[a]]
 padColumns l xs = map (pad l) xs
   where pad n ys = ys ++ replicate n mempty
 
-diffCSVs :: Either String (V.Vector Lemma)
-         -> Either String (V.Vector Lemma)
-         -> Either String (V.Vector Lemma)
+diffCSVs :: Monad m => m (V.Vector Lemma)
+                    -> m (V.Vector Lemma)
+                    -> m (V.Vector Lemma)
 diffCSVs xs ys = do
     v1 <- xs
     v2 <- ys
