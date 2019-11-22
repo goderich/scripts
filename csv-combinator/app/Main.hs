@@ -9,7 +9,6 @@ import qualified Data.Map.Strict as M
 import qualified Data.Map.Merge.Strict as M
 import System.Environment (getArgs)
 import Control.Monad (zipWithM_)
-import Data.List (elemIndex)
 
 type Key = (String, String)
 type Glosses = [String]
@@ -52,8 +51,8 @@ combineMatrices xs ys
     where l = length
 
 padRows :: Monoid a => Int -> [[a]] -> [[a]]
-padRows len xs = xs ++ (replicate len
-                          (replicate (length . head $ xs) mempty))
+padRows len xs = xs ++ replicate len
+                          (replicate (length . head $ xs) mempty)
 
 transformCSV :: Monad m => m (V.Vector Lemma)
                         -> m (V.Vector Lemma)
@@ -95,10 +94,7 @@ printCSV x name = case x of
     Right r  -> BL.writeFile name . encode . V.toList $ r
 
 diffName :: String -> String
-diffName n = basename ++ "-diff.csv"
-  where basename = case elemIndex '.' n of
-                     Just x -> take x n
-                     Nothing -> n
+diffName n = n ++ ".diff"
 
 main :: IO ()
 main = do
