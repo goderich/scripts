@@ -91,7 +91,11 @@ diffCSVs xs ys = do
 printCSV :: Either String (V.Vector Lemma) -> String -> IO ()
 printCSV x name = case x of
     Left err -> putStrLn err
-    Right r  -> BL.writeFile name . encode . V.toList $ r
+    Right r  -> if null r
+        then pure ()
+        else do
+            putStrLn ("Created " ++ name)
+            BL.writeFile name . encode . V.toList $ r
 
 diffName :: String -> String
 diffName n = n ++ ".diff"
