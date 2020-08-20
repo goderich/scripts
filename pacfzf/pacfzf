@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+pacman -Slq |
+fzf --multi --preview 'pacman -Si {1}' --reverse |
+xargs -ro sudo pacman -S
