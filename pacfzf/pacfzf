@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 
-pacman -Slq |
+pacman -Sl |
+awk '{print $2($4=="" ? "" : " *")}' |
 fzf --multi --preview 'pacman -Si {1}' --reverse |
 xargs -ro sudo pacman -S
