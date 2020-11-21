@@ -28,6 +28,6 @@ A Haskell script to convert CSV files in the format (begin-time, end-time, text)
 
 A Haskell script that combines CSV files with a specific content layout. The first two columns act as a key. The rest of the colums are the value, and their number is not defined or limited. A single key can have several corresponding values, in which case they are treated as a matrix (list of lists). The script finds the corresponding keys and combines any number of files, starting with a single file (the 'original'). The output is a merged file of all the inputs with the original, plus a diff file against the original for each input file. Diff files are only generated if there are missing keys.
 
-## pacfzf
+## pacsk
 
-A shell one-liner that passes pandoc packages through fzf for easy filtering and installing. Totally stolen from Manjaro.
+A shell one-liner that passes pandoc packages through [skim](https://github.com/lotabout/skim) for easy filtering and installing. Based on a similar script from Manjaro using `yay` and `fzf`.
