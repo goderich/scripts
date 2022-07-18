@@ -3,4 +3,5 @@
 pacman -Sl |
 awk '{print $2($4=="" ? "" : " *")}' |
 sk --multi --preview 'pacman -Si {1}' --reverse |
+cut -d " " -f 1 |
 xargs -ro sudo pacman -S

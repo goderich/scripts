@@ -3,4 +3,5 @@
 paru -Sl |
 awk '{print $2($4=="" ? "" : " *")}' |
 sk --multi --preview 'paru -Si {1}' --reverse |
+cut -d " " -f 1 |
 xargs -ro paru -S
