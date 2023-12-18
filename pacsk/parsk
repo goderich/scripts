@@ -1,7 +1,9 @@
 #!/usr/bin/sh
 
 paru -Sl |
-awk '{print $2($4=="" ? "" : " *")}' |
-sk --multi --preview 'paru -Si {1}' --reverse |
+# Strip ANSI color codes
+sed -e 's/\x1b\[[0-9;]\+m//g' |
+awk '{print $2($4=="" ? "" : " *") " " ($1=="aur" ? "(aur)" : "")}' |
+fzf --multi --preview 'paru -Si {1}' --reverse |
 cut -d " " -f 1 |
 xargs -ro paru -S
