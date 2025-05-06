@@ -24,4 +24,7 @@
   (when-not (str/ends-with? in "-handout.html")
     (println "Error: incorrect filename or extension! (Must end with '-handout.html')")
     (System/exit 1))
-  (print-pdf in out))
+  (print-pdf in out)
+  (when (fs/exists? out)
+    (fs/delete in))
+  (println "PDF print finished successfully!"))
